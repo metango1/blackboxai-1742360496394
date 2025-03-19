@@ -1,0 +1,106 @@
+@model AuthorizationSystem.Models.Role
+
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>
+                <i class="fas fa-plus-circle"></i> Create New Role
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label required">Role Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter role name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ParentRoleId" class="form-label">Parent Role</label>
+                            <select asp-for="ParentRoleId" class="form-select"
+                                    asp-items="@(new SelectList(ViewBag.ParentRoles, "Id", "Name"))">
+                                <option value="">-- Select Parent Role (Optional) --</option>
+                            </select>
+                            <span asp-validation-for="ParentRoleId" class="text-danger"></span>
+                            <div class="form-text">Leave empty if this is a top-level role</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" 
+                                      placeholder="Enter role description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Create Role
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle"></i> Help
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Creating a New Role</h5>
+                    <p class="card-text">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Enter a unique name for the role</li>
+                            <li><i class="fas fa-check text-success"></i> Select a parent role if this is a subordinate role</li>
+                            <li><i class="fas fa-check text-success"></i> Add a description to clarify the role's purpose</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Custom validation styling
+            $('form').on('submit', function() {
+                if (!$(this).valid()) {
+                    $('.validation-summary-errors').show();
+                    return false;
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .required:after {
+            content: " *";
+            color: red;
+        }
+        
+        .validation-summary-errors {
+            display: none;
+        }
+        
+        .validation-summary-errors.show {
+            display: block;
+        }
+    </style>
+}
