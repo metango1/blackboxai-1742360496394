@@ -1,0 +1,202 @@
+@model AuthorizationSystem.Models.Role
+
+@{
+    ViewData["Title"] = "Role Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>
+                <i class="fas fa-info-circle"></i> Role Details: @Model.Name
+            </h2>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-id-card"></i> Basic Information
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Role Name:</div>
+                        <div class="col-md-8">@Model.Name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Description:</div>
+                        <div class="col-md-8">
+                            @(string.IsNullOrEmpty(Model.Description) ? "No description provided" : Model.Description)
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Parent Role:</div>
+                        <div class="col-md-8">
+                            @if (Model.ParentRole != null)
+                            {
+                                <a asp-action="Details" asp-route-id="@Model.ParentRole.Id">
+                                    @Model.ParentRole.Name
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Top-level role</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Created Date:</div>
+                        <div class="col-md-8">@Model.CreatedDate.ToString("g")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 fw-bold">Last Modified:</div>
+                        <div class="col-md-8">@Model.LastModified.ToString("g")</div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Children.Any())
+            {
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-sitemap"></i> Subordinate Roles
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                        <th>Description</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var child in Model.Children)
+                                    {
+                                        <tr>
+                                            <td>@child.Name</td>
+                                            <td>
+                                                @(string.IsNullOrEmpty(child.Description) 
+                                                    ? "No description" 
+                                                    : (child.Description.Length > 50 
+                                                        ? $"{child.Description.Substring(0, 47)}..." 
+                                                        : child.Description))
+                                            </td>
+                                            <td>@child.CreatedDate.ToString("g")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="Details" asp-route-id="@child.Id" 
+                                                       class="btn btn-info btn-sm">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </a>
+                                                    <a asp-action="Edit" asp-route-id="@child.Id" 
+                                                       class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-chart-network"></i> Role Hierarchy
+                </div>
+                <div class="card-body">
+                    <div class="role-hierarchy-mini">
+                        @if (Model.ParentRole != null)
+                        {
+                            <div class="parent-role mb-2">
+                                <small class="text-muted">Parent</small>
+                                <div class="role-box">
+                                    <a asp-action="Details" asp-route-id="@Model.ParentRole.Id">
+                                        @Model.ParentRole.Name
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="hierarchy-arrow text-center mb-2">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                        }
+                        <div class="current-role mb-2">
+                            <div class="role-box current">
+                                @Model.Name
+                            </div>
+                        </div>
+                        @if (Model.Children.Any())
+                        {
+                            <div class="hierarchy-arrow text-center mb-2">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="children-roles">
+                                <small class="text-muted">Subordinates (@Model.Children.Count())</small>
+                                @foreach (var child in Model.Children)
+                                {
+                                    <div class="role-box child">
+                                        <a asp-action="Details" asp-route-id="@child.Id">
+                                            @child.Name
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .role-hierarchy-mini {
+        padding: 1rem;
+    }
+
+    .role-box {
+        padding: 0.5rem;
+        margin: 0.25rem 0;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        text-align: center;
+    }
+
+    .role-box.current {
+        background-color: #cfe2ff;
+        border-color: #9ec5fe;
+        font-weight: bold;
+    }
+
+    .role-box.child {
+        background-color: #fff3cd;
+        border-color: #ffe69c;
+    }
+
+    .hierarchy-arrow {
+        color: #6c757d;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>
