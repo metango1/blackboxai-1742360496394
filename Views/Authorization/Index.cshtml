@@ -1,0 +1,127 @@
+@model IEnumerable<AuthorizationSystem.Models.Role>
+
+@{
+    ViewData["Title"] = "Role Management";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="display-4">
+                <i class="fas fa-sitemap"></i> Role Hierarchy
+            </h2>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Role
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No roles have been defined yet.
+                </div>
+            }
+            else
+            {
+                <div class="role-hierarchy">
+                    @await Html.PartialAsync("_RoleTreePartial", Model)
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Toggle role children visibility
+            $('.role-toggle').click(function(e) {
+                e.preventDefault();
+                $(this).find('i').toggleClass('fa-chevron-right fa-chevron-down');
+                $(this).closest('.role-item').find('> .role-children').slideToggle();
+            });
+
+            // Confirm delete
+            $('.delete-role').click(function(e) {
+                if (!confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .role-hierarchy {
+        padding: 1rem;
+    }
+
+    .role-item {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    .role-content {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+
+    .role-content:hover {
+        background-color: #e9ecef;
+    }
+
+    .role-toggle {
+        margin-right: 0.5rem;
+        color: #6c757d;
+        cursor: pointer;
+        width: 20px;
+        text-align: center;
+    }
+
+    .role-name {
+        flex-grow: 1;
+        font-weight: 500;
+    }
+
+    .role-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .role-children {
+        margin-left: 1rem;
+        border-left: 2px solid #dee2e6;
+        padding-left: 1rem;
+    }
+
+    /* Role level specific colors */
+    .role-level-0 > .role-content {
+        background-color: #cfe2ff;
+        border-color: #9ec5fe;
+    }
+
+    .role-level-1 > .role-content {
+        background-color: #d1e7dd;
+        border-color: #a3cfbb;
+    }
+
+    .role-level-2 > .role-content {
+        background-color: #fff3cd;
+        border-color: #ffe69c;
+    }
+
+    .role-description {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-left: 1rem;
+    }
+</style>
